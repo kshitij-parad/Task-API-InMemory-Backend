@@ -1,51 +1,55 @@
+This README contains some formatting errors and placeholder text like **"Copy Edit"**. Below is the corrected version:
+
+---
+
 # 📝 Task API - Spring Boot (In-Memory)
 
-A simple Spring Boot REST API for managing tasks with an in-memory storage system.
+A simple **Spring Boot** REST API for managing tasks using an **in-memory storage system**.
 
 ---
 
 ## 🚀 Features
-- Add, update, delete, and retrieve tasks.
+- CRUD operations: **Add, Update, Delete, and Retrieve Tasks**.
 - Uses an **AtomicInteger** for unique task IDs.
-- No database required (in-memory storage).
+- No database required (**In-Memory Storage**).
 
 ---
 
 ## 🏗️ Tech Stack
-- **Backend:** Spring Boot
-- **Language:** Java
-- **Build Tool:** Maven
+- **Backend:** Spring Boot  
+- **Language:** Java  
+- **Build Tool:** Maven  
 
 ---
 
 ## 🔧 Setup Instructions
 
 ### **1️⃣ Prerequisites**
-- Java 17+ installed
-- Maven installed
+- Java **17+** installed  
+- Maven installed  
 
 ### **2️⃣ Clone the Repository**
-git clone https://github.com/kshitij-parad/todo-app-backend.git
-cd todo-app-backend
-3️⃣ Run the Application
+```sh
+git clone https://github.com/kshitij-parad/Task-API-InMemory-Backend.git
+cd Task-API-InMemory-Backend
+```
 
-
-Copy
-Edit
+### **3️⃣ Run the Application**
+```sh
 mvn spring-boot:run
-The server will start at: http://localhost:8080
+```
+The server will start at: [http://localhost:8080](http://localhost:8080)
 
-📌 API Endpoints
-🌟 Get All Tasks
-http
-Copy
-Edit
+---
+
+## 📌 API Endpoints
+
+### 🌟 Get All Tasks
+```http
 GET /api/task
-Response:
-
-json
-Copy
-Edit
+```
+**Response:**
+```json
 [
   {
     "id": 1,
@@ -53,64 +57,68 @@ Edit
     "desc": "This is a sample task"
   }
 ]
-➕ Add a Task
-http
-Copy
-Edit
-POST /api/task
-Request Body:
+```
 
-json
-Copy
-Edit
+### ➕ Add a Task
+```http
+POST /api/task
+```
+**Request Body:**
+```json
 {
   "name": "New Task",
   "desc": "Task description"
 }
-Response: "Task {id} Added Successfully."
+```
+**Response:** `"Task {id} Added Successfully."`
 
-🗑️ Delete a Task
-http
-Copy
-Edit
+### 🗑️ Delete a Task
+```http
 DELETE /api/task/{id}
-Response: "Task Deleted!!"
+```
+**Response:** `"Task Deleted!!"`
 
-🔄 Update a Task
-http
-Copy
-Edit
+### 🔄 Update a Task
+```http
 PUT /api/task/{id}
-Request Body:
-
-json
-Copy
-Edit
+```
+**Request Body:**
+```json
 {
   "name": "Updated Task",
   "desc": "Updated description"
 }
-Response: "Task Updated!"
-
-🎯 To-Do List
-✅ Add more validations
-✅ Improve error handling
-🔲 Integrate with a database (MySQL/PostgreSQL)
-👨‍💻 Author
-Kshitij Parad
-📧 Your Email
-📌 GitHub: @kshitij-parad
-
-📝 License
-This project is licensed under the MIT License.
-
-yaml
-Copy
-Edit
+```
+**Response:** `"Task Updated!"`
 
 ---
 
+## 🎯 To-Do List
+✅ Add more validations  
+✅ Improve error handling  
+🔲 Integrate with a database (**MySQL/PostgreSQL**)  
 
-✅ **This file is ready to be used!** Let me know if you need any changes. 🚀
-=======
+---
 
+## 👨‍💻 Author  
+**Kshitij Parad**  
+📌 GitHub: [@kshitij-parad](https://github.com/kshitij-parad)  
+
+---
+
+## 📝 License  
+This project is licensed under the **MIT License**.
+
+---
+
+### ✅ **Now, update the README file manually in your project.**  
+
+1. **Open** the `README.md` file in your project.  
+2. **Replace** the existing content with the corrected version above.  
+3. **Save the file**, then run:
+   ```sh
+   git add README.md
+   git commit -m "Fixed README formatting issues"
+   git push origin master
+   ```
+🚀 Your README is now **error-free** and ready to use!

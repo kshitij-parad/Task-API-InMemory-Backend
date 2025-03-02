@@ -1,7 +1,4 @@
-This README contains some formatting errors and placeholder text like **"Copy Edit"**. Below is the corrected version:
-
 ---
-
 # 📝 Task API - Spring Boot (In-Memory)
 
 A simple **Spring Boot** REST API for managing tasks using an **in-memory storage system**.

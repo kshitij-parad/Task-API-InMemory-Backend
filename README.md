@@ -110,15 +110,3 @@ PUT /api/task/{id}
 This project is licensed under the **MIT License**.
 
 ---
-
-### ✅ **Now, update the README file manually in your project.**  
-
-1. **Open** the `README.md` file in your project.  
-2. **Replace** the existing content with the corrected version above.  
-3. **Save the file**, then run:
-   ```sh
-   git add README.md
-   git commit -m "Fixed README formatting issues"
-   git push origin master
-   ```
-🚀 Your README is now **error-free** and ready to use!

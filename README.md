@@ -25,12 +25,11 @@ A simple Spring Boot REST API for managing tasks with an in-memory storage syste
 - Maven installed
 
 ### **2️⃣ Clone the Repository**
-sh
 git clone https://github.com/kshitij-parad/todo-app-backend.git
 cd todo-app-backend
 3️⃣ Run the Application
 
-sh
+
 Copy
 Edit
 mvn spring-boot:run

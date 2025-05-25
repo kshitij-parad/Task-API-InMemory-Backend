@@ -1,5 +1,5 @@
 ---
-# 📝 Task API - Spring Boot (In-Memory)
+# 📝 Task API - Spring Boot (In-Memory) (Without Security)
 
 A simple **Spring Boot** REST API for managing tasks using an **in-memory storage system**.
 

@@ -1,89 +1,94 @@
 package com.example.Task_API_InMemory.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.Task_API_InMemory.dto.TaskDTO;
+import com.example.Task_API_InMemory.utils.Mapper;
+import com.example.Task_API_InMemory.model.Task;
+import com.example.Task_API_InMemory.model.User;
+import com.example.Task_API_InMemory.repository.TaskRepository;
+import com.example.Task_API_InMemory.repository.UserRepository;
 
-import com.example.Task_API_InMemory.Model.Task;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PutMapping;
-
-
-@CrossOrigin(origins = "http://localhost:3000") 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api")
 public class MyTaskController {
-        
-    ArrayList<Task> taskList = new ArrayList<>(); 
 
-    private AtomicInteger idCounter = new AtomicInteger(1); // Atomic counter for unique ID generation
+    @Autowired
+    private TaskRepository taskRepository;
 
-    @GetMapping("/hello")
-    public String Hello() {
-        return  "Hello priti!!";
+    @Autowired
+    private UserRepository userRepository;
+
+    @GetMapping("/task")
+    public ResponseEntity<List<TaskDTO>> getAllTasks() {
+        List<Task> tasks = taskRepository.findAll();
+        List<TaskDTO> taskDTOs = tasks.stream()
+                .map(Mapper::toTaskDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(taskDTOs);
     }
 
     @PostMapping("/task")
-    public Task addTask(@RequestBody Task task) {
-        task.setId(idCounter.getAndIncrement());
-        taskList.add(task);
-        return task;
-    
-    }
-    
-    @GetMapping("/task")
-    public ArrayList<Task> getTasks() {
-        return taskList;
-    }
+    public ResponseEntity<TaskDTO> addTask(@RequestBody TaskDTO taskDTO) {
+        Optional<User> userOptional = userRepository.findById(taskDTO.getUser().getId());
+        if (userOptional.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
 
+        Task task = Mapper.toTaskEntity(taskDTO);
+        task.setUser(userOptional.get());
+
+        Task savedTask = taskRepository.save(task);
+        return ResponseEntity.ok(Mapper.toTaskDTO(savedTask));
+    }
 
     @GetMapping("/task/{id}")
-    public Task getTask(@PathVariable int id) {
-
-        for(Task task :taskList){
-            if(task.getId() == id){
-                return task;
-            }
+    public ResponseEntity<TaskDTO> getTaskById(@PathVariable Long id) {
+        Optional<Task> optionalTask = taskRepository.findById(id);
+        if (optionalTask.isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
-    
-        return null;
+        return ResponseEntity.ok(Mapper.toTaskDTO(optionalTask.get()));
     }
-    
-
-    @DeleteMapping("/task/{id}")
-    public String deleteTask(@PathVariable int id){
-
-        for(Task task: taskList){
-            if(task.getId() == id){
-                taskList.remove(task);
-                return "Task Deleted!!";
-            }
-        }
-
-        return "Not Found";
-    }
-    
 
     @PutMapping("/task/{id}")
-    public Task putTask(@PathVariable int id, @RequestBody Task putTask) {
-
-        for(Task task : taskList){
-            if(task.getId() == id){
-                task.setName(putTask.getName());
-                task.setDesc(putTask.getDesc());
-                return task;
-            }
+    public ResponseEntity<TaskDTO> updateTask(@PathVariable Long id, @RequestBody TaskDTO taskDTO) {
+        Optional<Task> optionalTask = taskRepository.findById(id);
+        if (optionalTask.isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
-       
-        return null;
+
+        Task task = optionalTask.get();
+        task.setName(taskDTO.getName());
+        task.setDescription(taskDTO.getDescription());
+
+        if (taskDTO.getUser() != null && taskDTO.getUser().getId() != null) {
+            userRepository.findById(taskDTO.getUser().getId()).ifPresent(task::setUser);
+        }
+
+        Task updatedTask = taskRepository.save(task);
+        return ResponseEntity.ok(Mapper.toTaskDTO(updatedTask));
     }
 
+    @DeleteMapping("/task/{id}")
+    public ResponseEntity<String> deleteTask(@PathVariable Long id) {
+        if (!taskRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        taskRepository.deleteById(id);
+        return ResponseEntity.ok("Task deleted successfully.");
+    }
+
+    @GetMapping("/hello")
+    public String hello() {
+        return "Hello Priti!!";
+    }
 }

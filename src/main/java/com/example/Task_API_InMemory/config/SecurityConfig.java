@@ -19,9 +19,11 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable()) // Disable CSRF for testing
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/register", "/api/login").permitAll()
-                .anyRequest().permitAll() // TEMP: Allow all for now
-            );
+                .requestMatchers("/api/auth/register").permitAll()
+                .anyRequest().authenticated() 
+            ).formLogin(form -> form.permitAll()
+        
+        );
         return http.build();
     }
 }

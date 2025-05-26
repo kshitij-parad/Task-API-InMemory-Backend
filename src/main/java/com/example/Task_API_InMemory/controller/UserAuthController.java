@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.Task_API_InMemory.dto.UserDTO;
-import com.example.Task_API_InMemory.dto.UserLoginDTO;
+
 import com.example.Task_API_InMemory.dto.UserRegistrationDTO;
 import com.example.Task_API_InMemory.model.User;
 import com.example.Task_API_InMemory.repository.UserRepository;
@@ -48,28 +47,4 @@ public class UserAuthController {
     }
 
 
-    @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody UserLoginDTO userLoginDTO) {
-
-        Optional<User> existingUser = userRepository.findByUsername(userLoginDTO.getUsername());
-
-        if(existingUser.isEmpty()){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
-        }
-
-        User newUser = existingUser.get();
-
-        // if(newUser.getPassword().equals(passwordEncoder.encode(userLoginDTO.getPassword())) && newUser.getUsername().equals(userLoginDTO.getUsername())){  }
-
-        //Alternate way
-        if(passwordEncoder.matches(userLoginDTO.getPassword(), newUser.getPassword())){
-            return ResponseEntity.ok("Login Success!");
-        }
-        else{
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
-        }
-       
-
-        
     }
-}

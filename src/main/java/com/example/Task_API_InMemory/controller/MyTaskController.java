@@ -87,7 +87,7 @@ public class MyTaskController {
         return ResponseEntity.ok("Task deleted successfully.");
     }
 
-    @GetMapping("/hello")
+    @GetMapping("/")
     public String hello() {
         return "Hello Priti!!";
     }

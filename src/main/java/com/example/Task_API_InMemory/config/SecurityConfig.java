@@ -14,16 +14,28 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    // @Bean
+    // public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    //     http
+    //         .csrf(csrf -> csrf.disable()) // Disable CSRF for testing
+    //         .authorizeHttpRequests(auth -> auth
+    //             .requestMatchers("/api/auth/register").permitAll()
+    //             .anyRequest().authenticated() 
+    //         ).formLogin(form -> form.permitAll()
+    //     );
+    //     return http.build();
+    // }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // Disable CSRF for testing
-            .authorizeHttpRequests(auth -> auth
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/register").permitAll()
-                .anyRequest().authenticated() 
-            ).formLogin(form -> form.permitAll()
-        
-        );
+                .anyRequest().authenticated()
+                )
+                .httpBasic(); // ✅ Use this instead of formLogin()
+
         return http.build();
     }
+
 }

@@ -8,9 +8,11 @@ import com.example.Task_API_InMemory.repository.TaskRepository;
 import com.example.Task_API_InMemory.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -36,15 +38,21 @@ public class MyTaskController {
     }
 
     @PostMapping("/task")
-    public ResponseEntity<TaskDTO> addTask(@RequestBody TaskDTO taskDTO) {
-        Optional<User> userOptional = userRepository.findById(taskDTO.getUser().getId());
+    public ResponseEntity<TaskDTO> addTask(@RequestBody TaskDTO taskDTO, Principal principal) {
+        // 1. Get username from the currently logged-in user
+        String username = principal.getName();
+
+        // 2. Fetch the full User entity from DB
+        Optional<User> userOptional = userRepository.findByUsername(username);
         if (userOptional.isEmpty()) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // Should never happen if secured
         }
 
+        // 3. Convert incoming DTO to Entity and assign the logged-in user
         Task task = Mapper.toTaskEntity(taskDTO);
         task.setUser(userOptional.get());
 
+        // 4. Save task and convert result to DTO
         Task savedTask = taskRepository.save(task);
         return ResponseEntity.ok(Mapper.toTaskDTO(savedTask));
     }

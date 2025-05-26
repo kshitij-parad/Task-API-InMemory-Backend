@@ -33,7 +33,7 @@ public class Mapper {
         task.setId(taskDTO.getId());
         task.setName(taskDTO.getName());
         task.setDescription(taskDTO.getDescription());
-        task.setUser(toUserEntity(taskDTO.getUser()));
+        // task.setUser(toUserEntity(taskDTO.getUser()));
         return task;
     }
 }

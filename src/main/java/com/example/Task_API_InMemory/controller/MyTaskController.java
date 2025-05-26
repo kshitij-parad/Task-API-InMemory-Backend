@@ -29,70 +29,99 @@ public class MyTaskController {
     private UserRepository userRepository;
 
     @GetMapping("/task")
-    public ResponseEntity<List<TaskDTO>> getAllTasks() {
-        List<Task> tasks = taskRepository.findAll();
-        List<TaskDTO> taskDTOs = tasks.stream()
+    public ResponseEntity<List<TaskDTO>> getUserTasks(Principal principal) {
+        String username = principal.getName();
+
+        Optional<User> optionalUser = userRepository.findByUsername(username);
+        if (optionalUser.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        User loggedInUser = optionalUser.get();
+
+        List<Task> userTasks = taskRepository.findByUser(loggedInUser);
+
+        List<TaskDTO> taskDTOs = userTasks.stream()
                 .map(Mapper::toTaskDTO)
                 .collect(Collectors.toList());
+
         return ResponseEntity.ok(taskDTOs);
     }
 
     @PostMapping("/task")
     public ResponseEntity<TaskDTO> addTask(@RequestBody TaskDTO taskDTO, Principal principal) {
-        // 1. Get username from the currently logged-in user
         String username = principal.getName();
-
-        // 2. Fetch the full User entity from DB
-        Optional<User> userOptional = userRepository.findByUsername(username);
-        if (userOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // Should never happen if secured
+        Optional<User> userOpt = userRepository.findByUsername(username);
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        // 3. Convert incoming DTO to Entity and assign the logged-in user
         Task task = Mapper.toTaskEntity(taskDTO);
-        task.setUser(userOptional.get());
+        task.setUser(userOpt.get());
 
-        // 4. Save task and convert result to DTO
         Task savedTask = taskRepository.save(task);
         return ResponseEntity.ok(Mapper.toTaskDTO(savedTask));
     }
 
     @GetMapping("/task/{id}")
-    public ResponseEntity<TaskDTO> getTaskById(@PathVariable Long id) {
-        Optional<Task> optionalTask = taskRepository.findById(id);
-        if (optionalTask.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(Mapper.toTaskDTO(optionalTask.get()));
-    }
-
-    @PutMapping("/task/{id}")
-    public ResponseEntity<TaskDTO> updateTask(@PathVariable Long id, @RequestBody TaskDTO taskDTO) {
+    public ResponseEntity<?> getTaskById(@PathVariable Long id, Principal principal) {
         Optional<Task> optionalTask = taskRepository.findById(id);
         if (optionalTask.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
         Task task = optionalTask.get();
+        String loggedInUsername = principal.getName();
+
+        if (!task.getUser().getUsername().equals(loggedInUsername)) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body("Access denied: You do not own this task.");
+        }
+
+        return ResponseEntity.ok(Mapper.toTaskDTO(task));
+    }
+
+    @PutMapping("/task/{id}")
+    public ResponseEntity<TaskDTO> updateTask(@PathVariable Long id, @RequestBody TaskDTO taskDTO, Principal principal) {
+        Optional<Task> optionalTask = taskRepository.findById(id);
+        if (optionalTask.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Task task = optionalTask.get();
+
+        // Get logged-in username from Principal
+        String loggedInUsername = principal.getName();
+
+        if (!task.getUser().getUsername().equals(loggedInUsername)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        // update task fields
         task.setName(taskDTO.getName());
         task.setDescription(taskDTO.getDescription());
-
-        if (taskDTO.getUser() != null && taskDTO.getUser().getId() != null) {
-            userRepository.findById(taskDTO.getUser().getId()).ifPresent(task::setUser);
-        }
 
         Task updatedTask = taskRepository.save(task);
         return ResponseEntity.ok(Mapper.toTaskDTO(updatedTask));
     }
 
     @DeleteMapping("/task/{id}")
-    public ResponseEntity<String> deleteTask(@PathVariable Long id) {
-        if (!taskRepository.existsById(id)) {
+    public ResponseEntity<Void> deleteTask(@PathVariable Long id, Principal principal) {
+        Optional<Task> optionalTask = taskRepository.findById(id);
+        if (optionalTask.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        taskRepository.deleteById(id);
-        return ResponseEntity.ok("Task deleted successfully.");
+        Task task = optionalTask.get();
+        String loggedInUsername = principal.getName();
+
+        if (!task.getUser().getUsername().equals(loggedInUsername)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        taskRepository.delete(task);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/")

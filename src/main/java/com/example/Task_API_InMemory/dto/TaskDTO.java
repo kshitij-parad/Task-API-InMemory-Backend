@@ -4,7 +4,7 @@ public class TaskDTO {
     private Long id;
     private String name;
     private String description;
-    private UserDTO user;
+    // private UserDTO user;
 
     // constructors
     public TaskDTO() {}
@@ -13,7 +13,7 @@ public class TaskDTO {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.user = user;
+        // this.user = user;
     }
 
     // getters and setters
@@ -26,6 +26,6 @@ public class TaskDTO {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public UserDTO getUser() { return user; }
-    public void setUser(UserDTO user) { this.user = user; }
+    // public UserDTO getUser() { return user; }
+    // public void setUser(UserDTO user) { this.user = user; }
 }

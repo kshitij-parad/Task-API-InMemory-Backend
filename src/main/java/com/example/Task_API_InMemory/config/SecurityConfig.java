@@ -38,7 +38,8 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/register","/api/auth/login").permitAll()
+                .requestMatchers("/api/auth/register","/api/auth/login",  "/swagger-ui/**",
+                "/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated()
                 ).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Important: stateless session
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
